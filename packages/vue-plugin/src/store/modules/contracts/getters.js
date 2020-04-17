@@ -1,7 +1,16 @@
 export const contractInstances = state => state.instances
 
 export const getContractData = (state, _, rootState) => options => {
-  const { contract, method, methodArgs, toUtf8, toAscii } = options
+  const {
+    contract,
+    method,
+    methodArgs,
+    toUtf8,
+    toAscii,
+    toWad,
+    toNumberString,
+    toAddress
+  } = options
   var argsHash = '0x0'
   var args = methodArgs ? methodArgs : []
 
@@ -28,8 +37,24 @@ export const getContractData = (state, _, rootState) => options => {
   if (cachedData === undefined) return 'loading'
 
   let { value } = cachedData
-  const { hexToUtf8, hexToAscii } = drizzleInstance.web3.utils
-  return toUtf8 ? hexToUtf8(value) : toAscii ? hexToAscii(value) : value
+  const {
+    hexToUtf8,
+    hexToAscii,
+    fromWei,
+    hexToNumberString,
+    toChecksumAddress
+  } = drizzleInstance.web3.utils
+  return toUtf8
+    ? hexToUtf8(value)
+    : toAscii
+    ? hexToAscii(value)
+    : toNumberString
+    ? hexToNumberString(value)
+    : toWad
+    ? fromWei(hexToNumberString(value))
+    : toAddress
+    ? toChecksumAddress('0x' + value.slice(26, 66))
+    : value
 }
 
 function generateArgsHash(args, web3) {
