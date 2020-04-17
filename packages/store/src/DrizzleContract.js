@@ -2,7 +2,7 @@ import * as ContractActions from './contracts/constants'
 import * as TransactionsActions from './transactions/constants'
 
 class DrizzleContract {
-  constructor (
+  constructor(
     web3Contract,
     web3,
     name,
@@ -23,7 +23,7 @@ class DrizzleContract {
     for (var i = 0; i < this.abi.length; i++) {
       var item = this.abi[i]
 
-      if (item.type == 'function' && item.constant === true) {
+      if (item.type == 'function') {
         this.methods[item.name].cacheCall = this.cacheCallFunction(item.name, i)
       }
 
@@ -55,7 +55,7 @@ class DrizzleContract {
     }
   }
 
-  cacheCallFunction (fnName, fnIndex, fn) {
+  cacheCallFunction(fnName, fnIndex, fn) {
     var contract = this
 
     return function () {
@@ -93,7 +93,7 @@ class DrizzleContract {
     }
   }
 
-  cacheSendFunction (fnName, fnIndex, fn) {
+  cacheSendFunction(fnName, fnIndex, fn) {
     // NOTE: May not need fn index
     var contract = this
 
@@ -106,7 +106,10 @@ class DrizzleContract {
       const stackTempKey = `TEMP_${new Date().getTime()}`
 
       // Add ID to "transactionStack" with temp value, will be overwritten on TX_BROADCASTED
-      contract.store.dispatch({ type: TransactionsActions.PUSH_TO_TXSTACK, stackTempKey })
+      contract.store.dispatch({
+        type: TransactionsActions.PUSH_TO_TXSTACK,
+        stackTempKey
+      })
 
       // Dispatch tx to saga
       // When txhash received, will be value of stack ID
@@ -125,7 +128,7 @@ class DrizzleContract {
     }
   }
 
-  generateArgsHash (args) {
+  generateArgsHash(args) {
     var web3 = this.web3
     var hashString = ''
 
