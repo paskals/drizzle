@@ -44,17 +44,23 @@ export const getContractData = (state, _, rootState) => options => {
     hexToNumberString,
     toChecksumAddress
   } = drizzleInstance.web3.utils
-  return toUtf8
-    ? hexToUtf8(value)
-    : toAscii
-    ? hexToAscii(value)
-    : toNumberString
-    ? hexToNumberString(value)
-    : toWad
-    ? fromWei(hexToNumberString(value))
-    : toAddress
-    ? toChecksumAddress('0x' + value.slice(26, 66))
-    : value
+  if (value === null) {
+    return ''
+  } else {
+    return toUtf8
+      ? hexToUtf8(value)
+      : toAscii
+      ? hexToAscii(value)
+      : toNumberString
+      ? hexToNumberString(value)
+      : toWad
+      ? fromWei(hexToNumberString(value))
+      : toAddress
+      ? value.length >= 66
+        ? toChecksumAddress('0x' + value.slice(26, 66))
+        : value
+      : value
+  }
 }
 
 function generateArgsHash(args, web3) {
